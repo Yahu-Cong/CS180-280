@@ -84,8 +84,9 @@ def matched_effect(values, weights, sign):
 
 
 def plot_results(metrics, output):
-    models = ("geometry", "rgb_grid", "rgb_hog", "rgb_hog_plus_geometry")
-    labels = ("Rectified grid + gain", "RGB grid", "RGB HOG", "RGB HOG + geometry")
+    models = ("coverage", "geometry", "rgb_grid", "rgb_hog", "rgb_hog_plus_geometry")
+    labels = ("Coverage only", "Rectified grid + gain + coverage", "RGB grid",
+              "RGB HOG", "RGB HOG + geometry")
     fig, (auc_ax, coverage_ax) = plt.subplots(1, 2, figsize=(11, 4), layout="constrained")
     for i, (model, label) in enumerate(zip(models, labels)):
         item = metrics["test_auc"][model]["pooled"]
@@ -192,7 +193,7 @@ def evaluate(sample, predictions, output):
     fields += ["rectified_residual", "rectification_gain"] + list(model_scores)
     test_indices = {index: j for j, index in enumerate(np.flatnonzero(test))}
     with (output / "scores.csv").open("w", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer = csv.DictWriter(stream, fieldnames=fields, lineterminator="\n")
         writer.writeheader()
         for i, row in enumerate(manifest):
             values = [*np.rint(counts[i] * len(PATCHES)).astype(int), *raw[i], *rectified[i],
